@@ -9,11 +9,9 @@ import eu.dowsing.collaboreight.painting.control.PanGestureListener;
 import eu.dowsing.collaboreight.painting.view.PaintingView;
 
 import android.content.Context;
-import android.graphics.Path;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
-import android.view.MotionEvent.PointerCoords;
 
 /**
  * Model of the painting.
@@ -114,6 +112,18 @@ public class Painting {
 	public List<ScaledPath> getAllPaths(){
 		return this.paths;
 	}
+	
+
+    /**
+     * Clear Data from the painting and update the view.
+     */
+    public void clearData(){
+    	this.scaledPath.reset();
+    	this.paths.clear();
+    	// notify listeners
+    	notifyPaintingChangedListenersAboutRedraw();
+    	view.invalidate();
+    }
     
     public void setScale(float scale){
 //        Log.d(this.getClass()+"", "Scale is "+mScaleFactor);

@@ -90,15 +90,6 @@ public class PaintingView extends View {
         tempPaint.setColor(Color.GREEN);
     }
 
-    /**
-     * Scale the contents of the view.
-     * 
-     * @param scale
-     */
-    public void setContentScale(float scale){
-    	painting.setScale(scale);
-    }
-
 
     @Override
    protected void onSizeChanged(int w, int h, int oldw, int oldh) {

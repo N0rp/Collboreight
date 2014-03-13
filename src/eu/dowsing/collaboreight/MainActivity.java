@@ -6,8 +6,6 @@ import eu.dowsing.collaboreight.painting.view.PaintingView;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.text.Layout;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
@@ -15,7 +13,6 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
-import android.widget.TextView;
 
 /**
  * The main activity.
@@ -52,13 +49,10 @@ public class MainActivity extends Activity {
 			
 			@Override
 			public void onStopTrackingTouch(SeekBar seekBar) {
-				// TODO Auto-generated method stub
-				
 			}
 			
 			@Override
 			public void onStartTrackingTouch(SeekBar seekBar) {
-				// TODO Auto-generated method stub
 			}
 			
 			@Override
@@ -82,13 +76,13 @@ public class MainActivity extends Activity {
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	        case R.id.halfZoom:
-	            paintingView.setContentScale(0.5f);
+	            paintingView.getModel().setScale(0.5f);
 	            return true;
 	        case R.id.normalZoom:
-	        	paintingView.setContentScale(1f);
+	        	paintingView.getModel().setScale(1.5f);
 	        	return true;
-	        case R.id.redraw:
-	        	paintingView.invalidate();
+	        case R.id.clearData:
+	        	paintingView.getModel().clearData();
 	            return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
