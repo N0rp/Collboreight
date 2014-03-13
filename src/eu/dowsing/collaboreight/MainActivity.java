@@ -2,6 +2,8 @@ package eu.dowsing.collaboreight;
 
 import com.example.collaboreight.R;
 
+import eu.dowsing.collaboreight.painting.view.PaintingView;
+
 import android.app.Activity;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
@@ -21,15 +23,15 @@ public class MainActivity extends Activity {
     float Mx1,My1;
     float x,y;
     
-    private MyView view1;
+    private PaintingView paintingView;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mPaint = new Paint();
        // setContentView(R.layout.main);
-        this.view1 =new MyView(this, mPaint);
-        setContentView(view1);
+        this.paintingView = new PaintingView(this, mPaint);
+        setContentView(paintingView);
         
         mPaint.setAntiAlias(true);
         mPaint.setDither(true);
@@ -46,8 +48,6 @@ public class MainActivity extends Activity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		
-		
-		
 		return true;
 	}
 	
@@ -56,13 +56,13 @@ public class MainActivity extends Activity {
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	        case R.id.halfZoom:
-	            view1.setScale(0.5f);
+	            paintingView.setContentScale(0.5f);
 	            return true;
 	        case R.id.normalZoom:
-	        	view1.setScale(1f);
+	        	paintingView.setContentScale(1f);
 	        	return true;
 	        case R.id.redraw:
-	        	view1.invalidate();
+	        	paintingView.invalidate();
 	            return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
