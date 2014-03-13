@@ -5,6 +5,8 @@ import android.graphics.Path;
 import android.graphics.RectF;
 
 public class ScaledPath extends Path {
+	
+	private Path actualPath = new Path();
 
 	private float scale = 1.0f;
 	
@@ -27,10 +29,20 @@ public class ScaledPath extends Path {
 	 */
 	public ScaledPath(ScaledPath path, String name){
 		super(path);
+		actualPath = path.getActualPath();
+		
 		this.scale = path.getScale();
 		this.offsetX = path.getOffsetX();
 		this.offsetY = path.getOffsetY();
 		this.name = name;
+	}
+	
+	/**
+	 * Get the actual path the user has touched.
+	 * @return
+	 */
+	public Path getActualPath(){
+		return this.actualPath;
 	}
     
     public Path getCurrentScaled(float scale){
@@ -83,7 +95,15 @@ public class ScaledPath extends Path {
 	}
 	
 	@Override
+	public void reset(){
+		super.reset();
+		actualPath.reset();
+	}
+	
+	@Override
 	public void lineTo(float x, float y){
+		actualPath.lineTo(x, y);
+		
 		x /= scale;
 		y /= scale;
 		
@@ -92,6 +112,8 @@ public class ScaledPath extends Path {
 	
 	@Override
 	public void moveTo(float x, float y){
+		actualPath.moveTo(x, y);
+		
 		x /= scale;
 		y /= scale;
 		
@@ -100,6 +122,8 @@ public class ScaledPath extends Path {
 	
 	@Override
 	public void quadTo(float x1, float y1, float x2, float y2){
+		actualPath.quadTo(x1, y1, x2, y2);
+		
 		x1 /= scale;
 		y1 /= scale;
 		x2 /= scale;

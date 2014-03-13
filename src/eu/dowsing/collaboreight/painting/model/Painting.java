@@ -8,22 +8,26 @@ import eu.dowsing.collaboreight.painting.view.PaintingView;
 
 import android.content.Context;
 import android.graphics.Path;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 
+/**
+ * Model of the painting.
+ * @author richardg
+ *
+ */
 public class Painting {
 
     
-    /** Contains the path the user has touched **/
-    private ScaledPath    mPath;
+    /** Contains the scaled path the user has touched **/
+    private ScaledPath    scaledPath;
+    
+    /** Contains the actual path the user has touched **/
+    private Path    actualdPath;
 
 	private float mX, mY;
 	private static final float TOUCH_TOLERANCE = 4;
 
-    /** <code>true</code> if recently rescaled and not redrawn yet **/
-    private boolean wasRescaled = false;
-//    private float scale = 1;
     private List<ScaledPath> paths = new LinkedList<ScaledPath>();
     private float mScaleFactor = 1.f;
 	private double offsetX = 0;
@@ -43,7 +47,7 @@ public class Painting {
     public Painting(Context context, PaintingView view){
     	this.view = view;
     	mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
-        mPath = new ScaledPath();
+        scaledPath = new ScaledPath();
     }
 	
     public void addPaintingChangedListener(PaintingChangedListener listener){
@@ -99,10 +103,10 @@ public class Painting {
 	 * @return the current path or <code>null</code> if there is none.
 	 */
 	public ScaledPath getCurrentPath(){
-		if(mPath.isEmpty() || isScaleGesture){
+		if(scaledPath.isEmpty() || isScaleGesture){
 			return null;
 		}else{
-			return mPath;
+			return scaledPath;
 		}
 	}
 	
@@ -113,7 +117,6 @@ public class Painting {
     public void setScale(float scale){
 //        Log.d(this.getClass()+"", "Scale is "+mScaleFactor);
     	this.mScaleFactor = scale;
-    	this.wasRescaled = true;
     	// notify listeners
     	notifyPaintingChangedListenersAboutRedraw();
     	view.invalidate();
@@ -124,9 +127,9 @@ public class Painting {
     }
 
     private void touch_start(float x, float y) {
-        mPath.reset();
-        mPath.setScale(getScale());
-        mPath.moveTo(x, y);
+        scaledPath.reset();
+        scaledPath.setScale(getScale());
+        scaledPath.moveTo(x, y);
         mX = x;
         mY = y;
     }
@@ -135,7 +138,7 @@ public class Painting {
         float dx = Math.abs(x - mX);
         float dy = Math.abs(y - mY);
         if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
-            mPath.quadTo(mX, mY, (x + mX)/2, (y + mY)/2);
+            scaledPath.quadTo(mX, mY, (x + mX)/2, (y + mY)/2);
             mX = x;
             mY = y;
         }
@@ -146,12 +149,12 @@ public class Painting {
     	if(isScaleGesture){	        
     		isScaleGesture = false;
     	}else{
-	        mPath.lineTo(mX, mY);
+	        scaledPath.lineTo(mX, mY);
 	        // commit the path to our final painting
-	        commitPath(mPath);
+	        commitPath(scaledPath);
     	}
     	// kill this so we don't double draw
-        mPath.reset();
+        scaledPath.reset();
     }
     
 	private class ScaleListener 

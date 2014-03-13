@@ -16,26 +16,33 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+/**
+ * Displays the painting. 
+ * @author richardg
+ *
+ */
 public class PaintingView extends View {
 
-    private static final float MINP = 0.25f;
-    private static final float MAXP = 0.75f;
+//    private static final float MINP = 0.25f;
+//    private static final float MAXP = 0.75f;
 	
     private Bitmap  mBitmap;
     private Canvas  mCanvas;
 
-	private Paint mPaint;
+	private Paint pathPaint;
+	private Paint tempPaint;
 	private Paint rectPaint;
     private Paint   mBitmapPaint;
    
 	
 	
 	private Painting painting;
+	/** <code>true</code> if recently rescaled and not redrawn yet **/
 	private boolean wasResized = false;
 	
 	private List<ScaledPath> newPaths = new LinkedList<ScaledPath>();
 
-    public PaintingView(Context context, Paint mPaint) {
+    public PaintingView(Context context) {
         super(context);
         painting = new Painting(context, this);
         painting.addPaintingChangedListener(new PaintingChangedListener() {
@@ -51,11 +58,22 @@ public class PaintingView extends View {
 			}
 		});
         
-        this.mPaint = mPaint;
         rectPaint = new Paint();
         rectPaint.setStyle(Paint.Style.STROKE);
         rectPaint.setColor(Color.BLUE);
         mBitmapPaint = new Paint(Paint.DITHER_FLAG);
+        
+        pathPaint = new Paint();
+        pathPaint.setAntiAlias(true);
+        pathPaint.setDither(true);
+        pathPaint.setColor(0xFFFF0000);
+        pathPaint.setStyle(Paint.Style.STROKE);
+        pathPaint.setStrokeJoin(Paint.Join.ROUND);
+       // mPaint.setStrokeCap(Paint.Cap.ROUND);
+        pathPaint.setStrokeWidth(10);
+        
+        tempPaint = new Paint(pathPaint);
+        tempPaint.setColor(Color.GREEN);
     }
 
     /**
@@ -87,7 +105,7 @@ public class PaintingView extends View {
         canvas.drawBitmap(mBitmap, 0, 0, mBitmapPaint);
         ScaledPath tempPath = painting.getCurrentPath();
         if(tempPath != null){
-        	drawPath(canvas, tempPath, mPaint, painting.getScale());
+    		canvas.drawPath(tempPath.getActualPath(), tempPaint);
         }else{
         	Log.d(getClass()+"", "path is null");
         }
@@ -95,7 +113,7 @@ public class PaintingView extends View {
         // draw a ll new paths
         while(!newPaths.isEmpty()){
         	ScaledPath newPath = newPaths.remove(0);
-        	drawPath(mCanvas, newPath, mPaint, painting.getScale());
+        	drawPath(mCanvas, newPath, pathPaint, painting.getScale());
         }
         
 //        canvas.drawPath(mPath, mPaint);
@@ -108,19 +126,19 @@ public class PaintingView extends View {
         	List<ScaledPath> paths = painting.getAllPaths();
         	for(ScaledPath path : paths){
 //            	mCanvas.drawPath(path, mPaint);
-        		drawPath(mCanvas, path, mPaint, painting.getScale());
+        		drawPath(mCanvas, path, pathPaint, painting.getScale());
         	}
             canvas.drawRect(50, 50, 100, 100, rectPaint);
         }
     }
 	
-	private void drawPath(Canvas canvas, ScaledPath path, Paint paint, float scale){
+	private void drawPath(final Canvas canvas, ScaledPath path, Paint paint, float scale){
 //		Log.d(this.getClass()+"", "drawPath with scale "+scale);
 //		Log.d(this.getClass()+"", "Draw "+path);
 		Path scaled = path.getCurrentScaled(scale);
 //		Log.d(this.getClass()+"", "Draw rescaled "+scaled);
 		
-		canvas.drawPath(scaled, mPaint);
+		canvas.drawPath(scaled, paint);
 	}
 
     @Override
