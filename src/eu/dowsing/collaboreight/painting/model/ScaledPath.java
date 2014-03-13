@@ -1,4 +1,4 @@
-package eu.dowsing.collaboreight;
+package eu.dowsing.collaboreight.painting.model;
 
 import android.graphics.Matrix;
 import android.graphics.Path;
