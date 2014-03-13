@@ -12,15 +12,16 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:background="#c0f0f0">
+        android:layout_margin="0px"
+        android:background="#c0c0c0" >
 
         <TextView
+            android:id="@+id/textView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:layout_marginLeft="86dp"
-            android:layout_marginTop="86dp"
+            android:layout_marginLeft="38dp"
             android:text="@string/hello_world" />
 
         <SeekBar

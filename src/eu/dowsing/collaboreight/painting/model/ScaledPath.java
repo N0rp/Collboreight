@@ -45,14 +45,21 @@ public class ScaledPath extends Path {
 		return this.actualPath;
 	}
     
-    public Path getCurrentScaled(float scale){
+    public Path getCurrentScaled(float scale, float offsetX, float offsetY){
     	Path scaled = new ScaledPath();
     	// computed scaled path
     	Matrix scaleMatrix = new Matrix();
     	scaleMatrix.setScale(scale, scale, 0, 0);
+//    	scaleMatrix.setTranslate(offsetX, offsetY);
     	// get scaled path through transform
-    	transform(scaleMatrix, scaled);
-    	return scaled;
+    	this.transform(scaleMatrix, scaled);
+    	
+    	Path translated = new ScaledPath();
+    	Matrix translateMatrix = new Matrix();
+    	translateMatrix.setTranslate(offsetX, offsetY);
+    	scaled.transform(translateMatrix, translated);
+    	
+    	return translated;
     }
 
 	@Override

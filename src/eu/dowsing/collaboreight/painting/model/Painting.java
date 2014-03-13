@@ -4,12 +4,16 @@ import java.util.LinkedList;
 import java.util.List;
 
 import eu.dowsing.collaboreight.painting.control.PaintingChangedListener;
+import eu.dowsing.collaboreight.painting.control.PanGestureDetector;
+import eu.dowsing.collaboreight.painting.control.PanGestureListener;
 import eu.dowsing.collaboreight.painting.view.PaintingView;
 
 import android.content.Context;
 import android.graphics.Path;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
+import android.view.MotionEvent.PointerCoords;
 
 /**
  * Model of the painting.
@@ -18,20 +22,19 @@ import android.view.ScaleGestureDetector;
  */
 public class Painting {
 
+	private static final String DEBUG_TAG = "Painting";
     
     /** Contains the scaled path the user has touched **/
     private ScaledPath    scaledPath;
-    
-    /** Contains the actual path the user has touched **/
-    private Path    actualdPath;
 
 	private float mX, mY;
 	private static final float TOUCH_TOLERANCE = 4;
 
     private List<ScaledPath> paths = new LinkedList<ScaledPath>();
     private float mScaleFactor = 1.f;
-	private double offsetX = 0;
-	private double offsetY = 0;
+    
+	private float offsetX = 0;
+	private float offsetY = 0;
 
     
     /** if <code>true</code> scale gesture was encountered. **/
@@ -41,13 +44,26 @@ public class Painting {
     
     private PaintingView view;
     private ScaleGestureDetector mScaleDetector;
+
+	private PanGestureDetector panDetector = new PanGestureDetector();
     
     private List<PaintingChangedListener> listeners = new LinkedList<PaintingChangedListener>();
     
-    public Painting(Context context, PaintingView view){
+    public Painting(Context context, final PaintingView view){
     	this.view = view;
     	mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
         scaledPath = new ScaledPath();
+        panDetector.addListener(new PanGestureListener() {
+			
+			@Override
+			public void onPanGesture(float moveX, float moveY) {
+				Log.w(DEBUG_TAG, "Pan offset is X: "+moveX);
+				setOffsetX(moveX);
+				setOffsetY(moveY);
+				
+				view.invalidate();
+			}
+		});
     }
 	
     public void addPaintingChangedListener(PaintingChangedListener listener){
@@ -73,30 +89,6 @@ public class Painting {
         notifyPaintingChangedListenersAboutCommitedPath(temp);
 	}
 	
-	public boolean onTouchEvent(MotionEvent event) {
-		float x = event.getX();
-        float y = event.getY();
-
-        mScaleDetector.onTouchEvent(event);
-        
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                touch_start(x, y);
-                view.invalidate();
-                break;
-            case MotionEvent.ACTION_MOVE:
-                touch_move(x, y);
-                view.invalidate();
-                break;
-            case MotionEvent.ACTION_UP:
-                touch_up();
-                view.invalidate();
-                break;
-        }	
-        
-        return true;
-	}
-	
 	/**
 	 * Return current user drawn path if there is one.
 	 * 
@@ -108,6 +100,15 @@ public class Painting {
 		}else{
 			return scaledPath;
 		}
+	}
+	
+	public float getOffsetX(){
+		Log.d(DEBUG_TAG, "Get offsetX: "+this.offsetX);
+		return this.offsetX;
+	}
+	
+	public float getOffsetY(){
+		return this.offsetY;
 	}
 	
 	public List<ScaledPath> getAllPaths(){
@@ -125,10 +126,37 @@ public class Painting {
     public float getScale(){
     	return this.mScaleFactor;
     }
+    
+    public void setOffsetX(float offsetX){
+    	this.offsetX = offsetX;
+    	notifyPaintingChangedListenersAboutRedraw();
+    	view.invalidate();
+    }
+    
+    public void setOffsetY(float offsetY){
+    	this.offsetY = offsetY;
+    	notifyPaintingChangedListenersAboutRedraw();
+    	view.invalidate();
+    }
 
-    private void touch_start(float x, float y) {
+    public boolean handleTouch(MotionEvent m){
+		mScaleDetector.onTouchEvent(m);
+		panDetector.handleTouch(m);
+		
+	    //Number of touches
+	    int pointerCount = m.getPointerCount();
+		Log.d(getClass()+"", "pointer count is "+pointerCount);
+	    if(pointerCount == 1){
+	    	handleSingleTouch(m);
+	    }
+	    
+	    return true;
+	}
+
+	private void touch_start(float x, float y) {
         scaledPath.reset();
         scaledPath.setScale(getScale());
+        scaledPath.setOffset(offsetX, offsetY);
         scaledPath.moveTo(x, y);
         mX = x;
         mY = y;
@@ -157,17 +185,42 @@ public class Painting {
         scaledPath.reset();
     }
     
+	private void handleSingleTouch(MotionEvent event){
+		float x = event.getX();
+	    float y = event.getY();
+	    Log.d(getClass()+"", "handle single touch");
+	    
+		switch (event.getAction()) {
+	    case MotionEvent.ACTION_DOWN:
+	        touch_start(x, y);
+	        view.invalidate();
+	        break;
+	    case MotionEvent.ACTION_MOVE:
+	        touch_move(x, y);
+	        view.invalidate();
+	        break;
+	    case MotionEvent.ACTION_UP:
+	        touch_up();
+	        view.invalidate();
+	        break;
+		}	
+	}
+
 	private class ScaleListener 
 	        extends ScaleGestureDetector.SimpleOnScaleGestureListener {
 	    @Override
 	    public boolean onScale(ScaleGestureDetector detector) {
-	    	float temp = getScale() * detector.getScaleFactor();
-	    	//Don't let the object get too small or too large.
-	        temp = Math.max(0.1f, Math.min(temp, 5.0f));
-	    	
-	        setScale(temp);
-	        isScaleGesture = true;
-	        return true;
+	    	if(!panDetector.isPan()){
+		    	float temp = getScale() * detector.getScaleFactor();
+		    	//Don't let the object get too small or too large.
+		        temp = Math.max(0.1f, Math.min(temp, 5.0f));
+		    	
+		        setScale(temp);
+		        isScaleGesture = true;
+		        return true;
+	    	}else{
+	    		return false;
+	    	}
 	    }
 	}
 }

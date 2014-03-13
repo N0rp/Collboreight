@@ -15,6 +15,7 @@ import android.graphics.Path;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
 
 /**
  * Displays the painting. 
@@ -34,7 +35,7 @@ public class PaintingView extends View {
 	private Paint rectPaint;
     private Paint   mBitmapPaint;
    
-	
+	private TextView txt;
 	
 	private Painting painting;
 	/** <code>true</code> if recently rescaled and not redrawn yet **/
@@ -44,7 +45,17 @@ public class PaintingView extends View {
 
     public PaintingView(Context context) {
         super(context);
-        painting = new Painting(context, this);
+        initPaint();
+        initPainting(context);
+        Log.d(getClass()+"", "onCreate");
+    }
+    
+    public Painting getModel(){
+    	return this.painting;
+    }
+    
+    private void initPainting(Context context){
+    	painting = new Painting(context, this);
         painting.addPaintingChangedListener(new PaintingChangedListener() {
 			
 			@Override
@@ -57,11 +68,14 @@ public class PaintingView extends View {
 				newPaths.add(path);
 			}
 		});
-        
+    }
+    
+    private void initPaint(){
+        mBitmapPaint = new Paint(Paint.DITHER_FLAG);
+    	
         rectPaint = new Paint();
         rectPaint.setStyle(Paint.Style.STROKE);
         rectPaint.setColor(Color.BLUE);
-        mBitmapPaint = new Paint(Paint.DITHER_FLAG);
         
         pathPaint = new Paint();
         pathPaint.setAntiAlias(true);
@@ -105,6 +119,7 @@ public class PaintingView extends View {
         canvas.drawBitmap(mBitmap, 0, 0, mBitmapPaint);
         ScaledPath tempPath = painting.getCurrentPath();
         if(tempPath != null){
+        	// draw the users path temporarily
     		canvas.drawPath(tempPath.getActualPath(), tempPaint);
         }else{
         	Log.d(getClass()+"", "path is null");
@@ -113,7 +128,7 @@ public class PaintingView extends View {
         // draw a ll new paths
         while(!newPaths.isEmpty()){
         	ScaledPath newPath = newPaths.remove(0);
-        	drawPath(mCanvas, newPath, pathPaint, painting.getScale());
+        	drawPath(mCanvas, newPath, pathPaint, painting.getScale(), painting.getOffsetX(), painting.getOffsetY());
         }
         
 //        canvas.drawPath(mPath, mPaint);
@@ -126,16 +141,16 @@ public class PaintingView extends View {
         	List<ScaledPath> paths = painting.getAllPaths();
         	for(ScaledPath path : paths){
 //            	mCanvas.drawPath(path, mPaint);
-        		drawPath(mCanvas, path, pathPaint, painting.getScale());
+        		drawPath(mCanvas, path, pathPaint, painting.getScale(), painting.getOffsetX(), painting.getOffsetY());
         	}
             canvas.drawRect(50, 50, 100, 100, rectPaint);
         }
     }
 	
-	private void drawPath(final Canvas canvas, ScaledPath path, Paint paint, float scale){
+	private void drawPath(final Canvas canvas, ScaledPath path, Paint paint, float scale, float offsetX, float offsetY){
 //		Log.d(this.getClass()+"", "drawPath with scale "+scale);
 //		Log.d(this.getClass()+"", "Draw "+path);
-		Path scaled = path.getCurrentScaled(scale);
+		Path scaled = path.getCurrentScaled(scale, offsetX, offsetY);
 //		Log.d(this.getClass()+"", "Draw rescaled "+scaled);
 		
 		canvas.drawPath(scaled, paint);
@@ -143,7 +158,7 @@ public class PaintingView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        return painting.onTouchEvent(event);
+        return painting.handleTouch(event);
     }
     
 

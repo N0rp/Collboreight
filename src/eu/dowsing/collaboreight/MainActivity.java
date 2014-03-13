@@ -1,13 +1,21 @@
 package eu.dowsing.collaboreight;
 
-import com.example.collaboreight.R;
+import eu.dowsing.collaboreight.R;
 
 import eu.dowsing.collaboreight.painting.view.PaintingView;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.text.Layout;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
 
 /**
  * The main activity.
@@ -25,10 +33,40 @@ public class MainActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
         
-       // setContentView(R.layout.main);
+        // add painting view to layout
         this.paintingView = new PaintingView(this);
-        setContentView(paintingView);
+        RelativeLayout.LayoutParams pParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        pParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
+        pParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
+        
+        ViewGroup l = (ViewGroup) this.findViewById(R.id.drawLayout);
+        l.addView(paintingView, 0, pParams);
+        
+        final SeekBar offsetXBar = (SeekBar) findViewById(R.id.offsetXBar);
+        final int OFFSET_MAX = 50;
+        offsetXBar.setProgress(OFFSET_MAX);
+        offsetXBar.setMax(OFFSET_MAX * 2);
+        offsetXBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+			
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+				// TODO Auto-generated method stub
+			}
+			
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress,
+					boolean fromUser) {
+				paintingView.getModel().setOffsetX( (progress - OFFSET_MAX) * 50);
+			}
+		});
     }
 
 	@Override
