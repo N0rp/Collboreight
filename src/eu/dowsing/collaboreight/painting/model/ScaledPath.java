@@ -111,6 +111,9 @@ public class ScaledPath extends Path {
 	public void lineTo(float x, float y){
 		actualPath.lineTo(x, y);
 		
+		x-= offsetX;
+		y-= offsetY;
+		
 		x /= scale;
 		y /= scale;
 		
@@ -121,6 +124,9 @@ public class ScaledPath extends Path {
 	public void moveTo(float x, float y){
 		actualPath.moveTo(x, y);
 		
+		x-= offsetX;
+		y-= offsetY;
+		
 		x /= scale;
 		y /= scale;
 		
@@ -130,6 +136,11 @@ public class ScaledPath extends Path {
 	@Override
 	public void quadTo(float x1, float y1, float x2, float y2){
 		actualPath.quadTo(x1, y1, x2, y2);
+		
+		x1-= offsetX;
+		y1-= offsetY;
+		x2-= offsetX;
+		y2-= offsetY;
 		
 		x1 /= scale;
 		y1 /= scale;
