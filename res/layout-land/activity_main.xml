@@ -2,7 +2,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity" >
+    tools:context=".DrawActivity" >
 
     <RelativeLayout
         android:id="@+id/drawLayout"
@@ -15,15 +15,6 @@
         android:layout_margin="0px"
         android:background="#c0c0c0" >
 
-        <TextView
-            android:id="@+id/textView1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginLeft="38dp"
-            android:text="@string/hello_world" />
-
         <SeekBar
             android:id="@+id/offsetXBar"
             android:layout_width="match_parent"
@@ -33,5 +24,16 @@
             android:max="100" />
 
     </RelativeLayout>
+
+    <TextView
+        android:id="@+id/lblXmppAccountUser"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:background="#000000"
+        android:text="@string/xmppAccountUser"
+        android:textColor="#FFFFFF" />
 
 </RelativeLayout>
