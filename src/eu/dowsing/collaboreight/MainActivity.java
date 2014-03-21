@@ -1,11 +1,20 @@
 package eu.dowsing.collaboreight;
 
+import org.jivesoftware.smack.ConnectionConfiguration;
+import org.jivesoftware.smack.Roster;
+import org.jivesoftware.smack.SASLAuthentication;
+import org.jivesoftware.smack.SmackAndroid;
+import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.XMPPException;
+
 import eu.dowsing.collaboreight.R;
 
 import eu.dowsing.collaboreight.painting.view.PaintingView;
 
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
@@ -27,10 +36,16 @@ public class MainActivity extends Activity {
     
     private PaintingView paintingView;
     
+    private void initSmack(){
+    }
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        
+        // init smack library
+        SmackAndroid.init(this);
         
         // add painting view to layout
         this.paintingView = new PaintingView(this);
@@ -61,6 +76,10 @@ public class MainActivity extends Activity {
 				paintingView.getModel().setOffsetX( (progress - OFFSET_MAX) * 50);
 			}
 		});
+        
+//        ActionBar actionBar = getActionBar();
+//        actionBar.hide();
+        new ConnectToXmpp().execute();
     }
 
 	@Override
@@ -75,18 +94,68 @@ public class MainActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle item selection
 	    switch (item.getItemId()) {
+		    case R.id.menuPen:
+	        	
+	        	return true;
+		    case R.id.menuMagicPen:
+	        	
+	        	return true;
+		    case R.id.menuSelect:
+	        	
+	        	return true;
+	        case R.id.normalZoom:
+	        	paintingView.getModel().setScale(1.0f);
+	        	return true;
 	        case R.id.halfZoom:
 	            paintingView.getModel().setScale(0.5f);
 	            return true;
-	        case R.id.normalZoom:
-	        	paintingView.getModel().setScale(1.5f);
-	        	return true;
 	        case R.id.clearData:
 	        	paintingView.getModel().clearData();
 	            return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }
+	}
+	
+	private class ConnectToXmpp extends AsyncTask<Void, Void, Void> {
+
+		private static final String server_host = "xabber.de";
+		private static final int server_port = 5222;
+		
+		private static final String server_user = "fyinconvenience@xabber.de";
+		private static final String server_pw = "fyinconvenience@xabber.de";
+		
+	    @Override
+	    protected Void doInBackground(Void... params) {
+	    	
+//	    	SmackAndroid.init(MainActivity.this);
+	         SASLAuthentication.supportSASLMechanism("PLAIN");
+	        ConnectionConfiguration config = new ConnectionConfiguration(server_host, server_port);
+	        config.setSASLAuthenticationEnabled(true);
+            config.setDebuggerEnabled(true);// Enable xmpp debugging at Logcat
+	        
+	        // set the android locaiton of the trust store
+	    	config.setTruststorePath("/system/etc/security/cacerts.bks");
+	    	config.setTruststorePassword("changeit");
+	    	config.setTruststoreType("bks");
+
+	        XMPPConnection conn2 = new XMPPConnection(config);
+	    try {
+	    	conn2.connect();
+//            conn2.login(server_user, server_pw);
+	        Roster.setDefaultSubscriptionMode(Roster.SubscriptionMode.manual);
+	    } catch (XMPPException e) {
+	        e.printStackTrace();
+	    } 
+
+	        return null;
+	    }
+
+	    @Override
+	    protected void onPostExecute(Void result) {
+	    	Log.d("MainActivity", "connected with results "+result);
+	    }
+
 	}
 
 }

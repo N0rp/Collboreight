@@ -5,8 +5,15 @@
         android:orderInCategory="100"
         android:showAsAction="never"
         android:title="@string/action_settings"/>
+    <item android:id="@+id/menuPen" android:titleCondensed="P" android:title="Pen" android:showAsAction="ifRoom" android:actionProviderClass="eu.dowsing.collaboreight.PenActionProvider"></item>
+    <item android:id="@+id/menuMagicPen" android:titleCondensed="M" android:title="MagicPen" android:showAsAction="ifRoom"></item>
+    <item android:id="@+id/menuSelect" android:titleCondensed="S" android:title="Select" android:showAsAction="ifRoom"></item>
+    <item android:id="@+id/normalZoom" android:title="NormalZoom" android:showAsAction="ifRoom"></item>
     <item android:id="@+id/halfZoom" android:title="Halfzoom"></item>
     <item android:id="@+id/clearData" android:title="Clear Data"></item>
-    <item android:id="@+id/normalZoom" android:title="NormalZoom"></item>
+    
+    
+    
+    
 
 </menu>

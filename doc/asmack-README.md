@@ -1,0 +1,109 @@
+aSmack README
+=============
+
+Version: 0.8.10
+Build date: Fr 7. Feb 11:56:42 CET 2014
+
+Important Notes
+===============
+
+Read this, or aSmack won't work for you!
+
+Static Code
+-----------
+
+In order to work correctly on Android, you need to register Smack's
+XMPP Providers and Extensions manually and init some static code
+blocks before you doing any XMPP activty. Calling
+SmackAndroid.init(Context) (in org.jivesoftware.smack) will do this
+for you.
+
+ConnectionConfiguration
+-----------------------
+
+Please use the provided AndroidConnectionConfiguration class if
+possible to create a new connection.
+
+Problems / Debugging
+==============================
+
+aSmack Wiki
+-----------
+
+More information about XMPP File Transfers, SSL Certificates and other
+stuff related to aSmack can be found in the wiki:
+https://github.com/Flowdalic/asmack/wiki
+
+How to debug your problem
+-------------------------
+
+We always provide source zips. Attach them to the jar in your favorite
+IDE. Enable debugging mode with [BOSH|XMPP]Connection.DEBUG and
+config.setDebug. See also:
+http://www.igniterealtime.org/builds/smack/docs/latest/documentation/debugging.html
+
+Reporting a bug
+---------------
+
+Your issue should contain
+1. a logcat
+2. a server to reproduce
+3. the code you are using (for FOSS project we'll accept reposituroy URLs)
+
+If you record a logcat and make sure to remove your credentials
+(usually a base64 block inside <auth></auth>).
+
+There is no guarantee that we will reply immediatly. But we will try
+to investigate the problem. Feel free to join ##smack @ freenode and
+ask for help (you may have to idle for some time before you get a
+reply).
+
+Open Source Licenses
+====================
+
+aSmack consists of the following components:
+
+ * Smack (XMPP Client Library)
+   Copyright © 2003-2010 Jive Software
+   Copyright © 2001-2004 Apache Software Foundation
+   Copyright © 2011-2013 Florian Schmaus
+   Copyright © 2013 Georg Lukas
+   Copyright © 2013 Robin Collier
+   Copyright © 2009 Jonas Ådahl
+   Apache License, Version 2.0
+ * Apache Harmony (SASL/XML)
+   Copyright © 2006, 2010 Apache Software Foundation
+   Apache License, Version 2.0
+ * novell-openldap-jldap (SASL)
+   Copyright © 2002-2003 Novell, Inc.
+   OpenLDAP Public License, Version 2.8
+ * Apache qpid (SASL)
+   Copyright © 2006-2008 Apache Software Foundation
+   Apache License, Version 2.0
+ * jbosh (BOSH)
+   Copyright © 2009 Guenther Niess
+   Copyright © 2009 Mike Cumings
+   Copyright © 2001-2003 Apache Software Foundation
+   Apache License, Version 2.0
+ * dnsjava (DNS SRV)
+   Copyright © 1998-2011 Brian Wellington
+   BSD 2-Clause License
+ * aSmack custom code (various glue stuff)
+   Copyright © 2011-2013 Florian Schmaus
+   Copyright © 2009-2010 Rene Treffer
+   Apache License, Version 2.0
+
+License texts:
+ * Apache License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0
+ * BSD 2-Clause License: http://opensource.org/licenses/BSD-2-Clause
+ * OpenLDAP Public License, Version 2.8: http://www.openldap.org/devel/gitweb.cgi?p=openldap-jldap.git;a=blob_plain;f=LICENSE;h=05ad7571e448b9d83ead5d4691274d9484574714;hb=HEAD
+
+Component Revision Information for this Release
+===============================================
+
+dnsjava:	1695
+smack:		3b53acfe6ee3e4ce7f38ff98eda11f64271df68e
+asmack:		7cf75aedb6e19fb2672847cd989c8dab54fb7b94
+jbosh:		709e0f42671a89745e45a2fd36e6585ddfcaeb91
+qpid:		1565617
+harmony:	1565617
